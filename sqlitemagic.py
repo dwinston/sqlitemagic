@@ -43,6 +43,9 @@ class SqliteMagic(Magics):
         return '<table>\n' + '\n'.join(self.rowify(r) for r in rows) + '\n</table>'
 
     def rowify(self, row):
+        for i, r in enumerate(row):
+            if r is None:
+                row[i] = "NULL"
         return '<tr>' + ''.join('<td>' + str(r) + '</td>' for r in row) + '</tr>'
 
 def load_ipython_extension(ipython):
