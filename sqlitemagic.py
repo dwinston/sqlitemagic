@@ -32,21 +32,26 @@ class SqliteMagic(Magics):
         try:
             cursor.execute(query)
             results = cursor.fetchall()
-            display(HTML(self.tablify(results)))
+            header = [f[0] for f in cursor.description]
+            display(HTML(self.tablify(results, header)))
         except Exception, e:
             import sys
             print >> sys.stderr, "exception", e
         cursor.close()
         connection.close()
 
-    def tablify(self, rows):
-        return '<table>\n' + '\n'.join(self.rowify(r) for r in rows) + '\n</table>'
+    def tablify(self, rows, header):
+        return '<table>\n' + self.rowify_header(header) + '\n'.join(self.rowify(r) for r in rows) + '\n</table>'
 
     def rowify(self, row):
         for i, r in enumerate(row):
             if r is None:
                 row[i] = "NULL"
         return '<tr>' + ''.join('<td>' + str(r) + '</td>' for r in row) + '</tr>'
+
+    def rowify_header(self, row):
+        return '<tr>' + ''.join('<th>' + str(r) + '</th>' for r in row) + '</tr>'
+
 
 def load_ipython_extension(ipython):
     ipython.register_magics(SqliteMagic)
