@@ -64,7 +64,13 @@ class SqliteMagic(Magics):
         parts = line.split()
         command = parts[0]
         if command=='.schema':
-	    cursor.execute('select sql from sqlite_master')
+	    if len(parts)>1:
+	        table = parts[1]
+	        select_clause = ' where name="'+table+'"'
+	    else:
+	        select_clause = ''
+	    query = 'select sql from sqlite_master' + select_clause
+	    cursor.execute(query)
             results = cursor.fetchall()
             display(HTML(self.tablify(results)))
         else:
