@@ -39,8 +39,8 @@ class SqliteMagic(Magics):
                 results = cursor.fetchall()
                 header = [f[0] for f in cursor.description]
                 display(HTML(self.tablify(results, header)))
-        except Exception, e:
-            print >> sys.stderr, "exception", e
+        except Exception as e:
+            print("exception", e, file=sys.stderr)
         cursor.close()
         connection.close()
 
