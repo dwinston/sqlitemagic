@@ -37,10 +37,17 @@ class SqliteMagic(Magics):
             else:
                 cursor.execute(query)
                 results = cursor.fetchall()
-                header = [f[0] for f in cursor.description]
+                if cursor.description is not None:
+                    header = [f[0] for f in cursor.description]
+                else:
+                    header = None
                 display(HTML(self.tablify(results, header)))
         except Exception as e:
             print("exception", e, file=sys.stderr)
+        modifiers = ['create', 'alter', 'drop',
+                     'insert', 'update', 'delete']
+        if any(query.lower().startswith(w) for w in modifiers):
+            connection.commit()
         cursor.close()
         connection.close()
 
